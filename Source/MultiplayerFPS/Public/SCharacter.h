@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 class UCameraComponent;
+class USkeletalMeshComponent;
 
 UCLASS()
 class MULTIPLAYERFPS_API ASCharacter : public ACharacter
@@ -46,7 +47,7 @@ protected:
 		FName WeaponAttachSocketName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCameraComponent* CameraComp;
+		UCameraComponent* CameraComp;
 
 public:	
 	// Called every frame

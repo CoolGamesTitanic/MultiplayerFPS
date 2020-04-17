@@ -17,6 +17,10 @@ ASCharacter::ASCharacter()
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanJump = true;
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	
+	CameraComp->bUsePawnControlRotation;
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +32,10 @@ void ASCharacter::BeginPlay()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	CurrentWeapon = GetWorld()->SpawnActor<ASWeapon>(StartWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+
+	if (CameraComp) {
+		CameraComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "head");
+	}
 
 	if (CurrentWeapon) {
 		CurrentWeapon->SetOwner(this);
