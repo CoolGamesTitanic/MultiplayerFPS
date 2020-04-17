@@ -103,7 +103,7 @@ void ASWeapon::Fire()
 		FVector TraceStart = MuzzleLocation;
 
 		FHitResult Hit;
-		if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams)) {
+		if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams)) {
 			//blocking hit process damage
 
 			AActor* HitActor = Hit.GetActor();
@@ -129,8 +129,6 @@ void ASWeapon::Fire()
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			}
 		}
-
-
 
 		if (DebugWeaponsDrawing > 0) {
 			DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::White, false, 1.0f, 0, 2.5f);
