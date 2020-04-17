@@ -58,6 +58,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 		USoundAttenuation* SoundAttenuationSettings;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+		int Spread = 15;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

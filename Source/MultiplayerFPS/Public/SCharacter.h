@@ -49,6 +49,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UCameraComponent* CameraComp;
 
+	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

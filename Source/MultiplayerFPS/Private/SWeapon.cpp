@@ -13,6 +13,7 @@
 #include "Sound/SoundAttenuation.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "MultiplayerFPS/MultiplayerFPS.h"
+#include "Math/UnrealMathUtility.h"
 
 static int32 DebugWeaponsDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -89,6 +90,7 @@ void ASWeapon::Fire()
 		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 		FVector ShotDirection = EyeRotation.Vector();
+
 		FVector TraceEnd = MuzzleLocation + (ShotDirection * 10000);
 
 		FCollisionQueryParams QueryParams;
