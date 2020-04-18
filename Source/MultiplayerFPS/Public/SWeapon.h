@@ -59,7 +59,16 @@ protected:
 		USoundAttenuation* SoundAttenuationSettings;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-		int Spread = 15;
+		float WeaponSpread = 0.25;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* DefaultImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+		USoundBase* FleshImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+		USoundAttenuation* ImpactAttenuationSettings;
 
 public:	
 	// Called every frame

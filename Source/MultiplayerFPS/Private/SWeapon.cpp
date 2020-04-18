@@ -91,6 +91,8 @@ void ASWeapon::Fire()
 
 		FVector ShotDirection = EyeRotation.Vector();
 
+		ShotDirection.X += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
+
 		FVector TraceEnd = MuzzleLocation + (ShotDirection * 10000);
 
 		FCollisionQueryParams QueryParams;
@@ -102,10 +104,13 @@ void ASWeapon::Fire()
 		//Particle "target" paramater
 		FVector TracerEndPoint = TraceEnd;
 
-		FVector TraceStart = MuzzleLocation;
+		FVector TraceStart = EyeLocation;
+
+		TraceStart.X += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
+		TraceStart.Y += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
 
 		FHitResult Hit;
-		if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams)) {
+		if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams)) {
 			//blocking hit process damage
 
 			AActor* HitActor = Hit.GetActor();
@@ -114,26 +119,32 @@ void ASWeapon::Fire()
 
 			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
-			UParticleSystem* SelectedEffect = nullptr;
+			UParticleSystem* SelectedParticleEffect = nullptr;
+			USoundBase* SelectedSoundEffect = nullptr;
 
 			switch (SurfaceType)
 			{
-			case SURFACE_FLESHDEFAULT:
-			case SURFACE_FLESHVULNERABLE:
-				SelectedEffect = FleshImpactEffect;
+			case SurfaceType1:
+			case SurfaceType2:
+				
+				SelectedParticleEffect = FleshImpactEffect;
+				SelectedSoundEffect = FleshImpactSound;
 				break;
 			default:
-				SelectedEffect = DefaultImpactEffect;
+				SelectedParticleEffect = DefaultImpactEffect;
+				SelectedSoundEffect = DefaultImpactSound;
+				UE_LOG(LogTemp, Warning, TEXT("kind of working"));
 				break;
 			}
 
-			if (SelectedEffect) {
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			if (SelectedParticleEffect) {
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedParticleEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SelectedSoundEffect, Hit.ImpactPoint, 1, 1, 0, SoundAttenuationSettings);
 			}
 		}
 
 		if (DebugWeaponsDrawing > 0) {
-			DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::White, false, 1.0f, 0, 2.5f);
+			DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
 		}
 
 		PlayFireEffect(TracerEndPoint);
