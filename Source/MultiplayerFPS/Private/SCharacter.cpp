@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -21,6 +22,8 @@ ASCharacter::ASCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	
 	CameraComp->bUsePawnControlRotation;
+
+	SprintSpeedMultiplier = 2.0f;
 }
 
 // Called when the game starts or when spawned
@@ -53,14 +56,16 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(GetActorRightVector() * Value);
 }
 
-void ASCharacter::BeginCrouch()
+void ASCharacter::CrouchFunction()
 {
-	Crouch();
-}
-
-void ASCharacter::EndCrouch()
-{
-	UnCrouch();
+	if (Crouching) {
+		UnCrouch();
+		Crouching = false;
+	}
+	else if (!Crouching) {
+		Crouch();
+		Crouching = true;
+	}
 }
 
 void ASCharacter::StartJump()
@@ -70,7 +75,12 @@ void ASCharacter::StartJump()
 
 void ASCharacter::StartSprinting()
 {
-	
+	GetCharacterMovement()->MaxWalkSpeed *= SprintSpeedMultiplier;
+}
+
+void ASCharacter::StopSprinting()
+{
+	GetCharacterMovement()->MaxWalkSpeed /= SprintSpeedMultiplier;
 }
 
 void ASCharacter::Fire()
@@ -98,15 +108,14 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &ASCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Turn", this, &ASCharacter::AddControllerYawInput);
 
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ASCharacter::BeginCrouch);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::EndCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ASCharacter::CrouchFunction);
 
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ASCharacter::StartJump);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::StartSprinting);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::StopSprinting);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASCharacter::Fire);
-
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

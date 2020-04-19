@@ -70,6 +70,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 		USoundAttenuation* ImpactAttenuationSettings;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+		UMaterialInterface* DefaultImpactDecal;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float DefaultDecalLifeSpan = 30;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	UAnimationAsset* FireAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	bool FireAnimPlaysSound = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float DecalSize = 10;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

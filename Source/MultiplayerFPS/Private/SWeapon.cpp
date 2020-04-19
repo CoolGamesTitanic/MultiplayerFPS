@@ -14,6 +14,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "MultiplayerFPS/MultiplayerFPS.h"
 #include "Math/UnrealMathUtility.h"
+#include "GameFramework/Character.h"
 
 static int32 DebugWeaponsDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -44,17 +45,26 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::PlayFireEffect(FVector TracerEndPoint)
 {
-	if (MuzzleEffect) {
-		UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
+	FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
+
+	if (FireAnimation) {
+		MeshComp->PlayAnimation(FireAnimation, false);
+	}
+	else {
+		if (MuzzleEffect) {
+			UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
+		}
+
+		if (TracerEffect) {
+			UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
+			if (TracerComp) {
+				TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
+			}
+		}
 	}
 
-	if (TracerEffect) {
-		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
-
-		UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
-		if (TracerComp) {
-			TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
-		}
+	if ((FireAnimation && !FireAnimPlaysSound) || (!FireAnimation)) {
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, MuzzleLocation, 1.0f, 1.0f, 0.0f, SoundAttenuationSettings);
 	}
 
 	APawn* MyOwner = Cast<APawn>(GetOwner());
@@ -64,10 +74,6 @@ void ASWeapon::PlayFireEffect(FVector TracerEndPoint)
 			PC->ClientPlayCameraShake(FireCamShake);
 		}
 	}
-
-	FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
-
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, MuzzleLocation, 1.0f, 1.0f, 0.0f, SoundAttenuationSettings);
 }
 
 // Called every frame
@@ -91,23 +97,21 @@ void ASWeapon::Fire()
 
 		FVector ShotDirection = EyeRotation.Vector();
 
-		ShotDirection.X += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
-
-		FVector TraceEnd = MuzzleLocation + (ShotDirection * 10000);
-
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(MyOwner);
 		QueryParams.AddIgnoredActor(this);
 		QueryParams.bTraceComplex = true;
 		QueryParams.bReturnPhysicalMaterial = true;
 
-		//Particle "target" paramater
-		FVector TracerEndPoint = TraceEnd;
-
 		FVector TraceStart = EyeLocation;
 
 		TraceStart.X += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
 		TraceStart.Y += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
+
+		FVector TraceEnd = TraceStart + (ShotDirection * 10000);
+
+		//Particle "target" paramater
+		FVector TracerEndPoint = TraceEnd;
 
 		FHitResult Hit;
 		if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams)) {
@@ -122,24 +126,32 @@ void ASWeapon::Fire()
 			UParticleSystem* SelectedParticleEffect = nullptr;
 			USoundBase* SelectedSoundEffect = nullptr;
 
+			UMaterialInterface* SelectedDecal = nullptr;
+			float SelectedDecalLifeSpan = 25;
+
 			switch (SurfaceType)
 			{
-			case SurfaceType1:
-			case SurfaceType2:
-				
+			case SURFACE_FLESHVULNERABLE:
+			case SURFACE_FLESHDEFAULT:
 				SelectedParticleEffect = FleshImpactEffect;
 				SelectedSoundEffect = FleshImpactSound;
 				break;
 			default:
 				SelectedParticleEffect = DefaultImpactEffect;
 				SelectedSoundEffect = DefaultImpactSound;
-				UE_LOG(LogTemp, Warning, TEXT("kind of working"));
+				SelectedDecal = DefaultImpactDecal;
+				SelectedDecalLifeSpan = DefaultDecalLifeSpan;
 				break;
 			}
 
 			if (SelectedParticleEffect) {
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedParticleEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			}
+			if (SelectedSoundEffect) {
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SelectedSoundEffect, Hit.ImpactPoint, 1, 1, 0, SoundAttenuationSettings);
+			}
+			if (SelectedDecal) {
+				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, FRotator(-90, 0, 0), SelectedDecalLifeSpan);
 			}
 		}
 

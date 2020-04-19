@@ -26,12 +26,12 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
-	void BeginCrouch();
-	void EndCrouch();
+	void CrouchFunction();
 
 	void StartJump();
 
 	void StartSprinting();
+	void StopSprinting();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	bool Sprinting = false;
@@ -46,11 +46,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 		FName WeaponAttachSocketName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UCameraComponent* CameraComp;
+	bool Crouching = false;
 
-	
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float SprintSpeedMultiplier;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -59,5 +58,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual FVector GetPawnViewLocation() const override;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UCameraComponent* CameraComp;
 
 };
