@@ -46,6 +46,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 		FName WeaponAttachSocketName;
 
+	void BeginZoom();
+	void EndZoom();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		bool bWantsToZoom;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+		float ZoomedFOV;
+
+	//default FOV set during begin play
+	float DefaultFOV;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
+		float ZoomInterpSpeed;
+
 	bool Crouching = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")

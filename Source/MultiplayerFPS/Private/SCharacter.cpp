@@ -24,6 +24,9 @@ ASCharacter::ASCharacter()
 	CameraComp->bUsePawnControlRotation;
 
 	SprintSpeedMultiplier = 2.0f;
+
+	ZoomedFOV = 65.0f;
+	ZoomInterpSpeed = 20;
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +34,8 @@ void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	DefaultFOV = CameraComp->FieldOfView;
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -90,10 +95,26 @@ void ASCharacter::Fire()
 	}
 }
 
+void ASCharacter::BeginZoom()
+{
+	bWantsToZoom = true;
+}
+
+void ASCharacter::EndZoom()
+{
+	bWantsToZoom = false;
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+
+	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
+
+	CameraComp->SetFieldOfView(NewFOV);
 
 }
 
@@ -116,6 +137,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::StopSprinting);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASCharacter::Fire);
+
+	PlayerInputComponent->BindAction("AimDownSights", IE_Pressed, this, &ASCharacter::BeginZoom);
+	PlayerInputComponent->BindAction("AimDownSights", IE_Released, this, &ASCharacter::EndZoom);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const
