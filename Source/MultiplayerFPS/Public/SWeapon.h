@@ -59,7 +59,9 @@ protected:
 		USoundAttenuation* SoundAttenuationSettings;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-		float WeaponSpread = 0.25;
+		float DefaultWeaponSpread = 1000;
+
+		float WeaponSpread;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundBase* DefaultImpactSound;
@@ -91,4 +93,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 		virtual void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+		virtual void WeaponSpreadSet1();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+		virtual void ResetWeaponSpread();
 };

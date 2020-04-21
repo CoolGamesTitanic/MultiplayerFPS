@@ -26,7 +26,7 @@ ASCharacter::ASCharacter()
 	SprintSpeedMultiplier = 2.0f;
 
 	ZoomedFOV = 65.0f;
-	ZoomInterpSpeed = 20;
+	ZoomInterpSpeed = 1;
 }
 
 // Called when the game starts or when spawned
@@ -80,12 +80,18 @@ void ASCharacter::StartJump()
 
 void ASCharacter::StartSprinting()
 {
-	GetCharacterMovement()->MaxWalkSpeed *= SprintSpeedMultiplier;
+	if (!bWantsToZoom) {
+		GetCharacterMovement()->MaxWalkSpeed *= SprintSpeedMultiplier;
+		bWantsToZoom = false;
+		sprinting = true;
+	}
+	
 }
 
 void ASCharacter::StopSprinting()
 {
-	GetCharacterMovement()->MaxWalkSpeed /= SprintSpeedMultiplier;
+	GetCharacterMovement()->MaxWalkSpeed = 600;
+	sprinting = false;
 }
 
 void ASCharacter::Fire()
@@ -98,11 +104,17 @@ void ASCharacter::Fire()
 void ASCharacter::BeginZoom()
 {
 	bWantsToZoom = true;
+	if (CurrentWeapon) {
+		CurrentWeapon->WeaponSpreadSet1();
+	}
 }
 
 void ASCharacter::EndZoom()
 {
 	bWantsToZoom = false;
+	if (CurrentWeapon) {
+		CurrentWeapon->ResetWeaponSpread();
+	}
 }
 
 // Called every frame
@@ -115,6 +127,10 @@ void ASCharacter::Tick(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 
 	CameraComp->SetFieldOfView(NewFOV);
+
+	if (bWantsToZoom && sprinting) {
+		StopSprinting();
+	}
 
 }
 

@@ -55,6 +55,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 		float ZoomedFOV;
 
+	bool sprinting = false;
+
 	//default FOV set during begin play
 	float DefaultFOV;
 

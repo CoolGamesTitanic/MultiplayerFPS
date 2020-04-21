@@ -34,6 +34,8 @@ ASWeapon::ASWeapon()
 
 	MuzzleSocketName = "MozzleFlashSocket";
 	TracerTargetName = "Target";
+
+	WeaponSpread = DefaultWeaponSpread;
 }
 
 // Called when the game starts or when spawned
@@ -105,10 +107,10 @@ void ASWeapon::Fire()
 
 		FVector TraceStart = EyeLocation;
 
-		TraceStart.X += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
-		TraceStart.Y += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
-
 		FVector TraceEnd = TraceStart + (ShotDirection * 10000);
+
+		TraceEnd.X += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
+		TraceEnd.Y += -WeaponSpread + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (WeaponSpread - -WeaponSpread)));
 
 		//Particle "target" paramater
 		FVector TracerEndPoint = TraceEnd;
@@ -161,5 +163,15 @@ void ASWeapon::Fire()
 
 		PlayFireEffect(TracerEndPoint);
 	}
+}
+
+void ASWeapon::WeaponSpreadSet1()
+{
+	WeaponSpread = 1;
+}
+
+void ASWeapon::ResetWeaponSpread()
+{
+	WeaponSpread = DefaultWeaponSpread;
 }
 
