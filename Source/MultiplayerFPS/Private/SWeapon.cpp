@@ -35,7 +35,7 @@ ASWeapon::ASWeapon()
 	MuzzleSocketName = "MozzleFlashSocket";
 	TracerTargetName = "Target";
 
-	WeaponSpread = DefaultWeaponSpread;
+	
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +43,7 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	WeaponSpread = DefaultWeaponSpread;
 }
 
 void ASWeapon::PlayFireEffect(FVector TracerEndPoint)
