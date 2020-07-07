@@ -61,7 +61,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		float DefaultWeaponSpread = 1000;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 		float WeaponSpread;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")

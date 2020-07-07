@@ -83,7 +83,6 @@ void ASWeapon::PlayFireEffect(FVector TracerEndPoint)
 void ASWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ASWeapon::Fire()
@@ -154,7 +153,7 @@ void ASWeapon::Fire()
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SelectedSoundEffect, Hit.ImpactPoint, 1, 1, 0, SoundAttenuationSettings);
 			}
 			if (SelectedDecal) {
-				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, FRotator(-90, 0, 0), SelectedDecalLifeSpan);
+				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, Hit.GetActor()->GetActorRotation(), SelectedDecalLifeSpan);
 			}
 		}
 
