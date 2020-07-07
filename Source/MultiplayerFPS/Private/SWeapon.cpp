@@ -153,7 +153,9 @@ void ASWeapon::Fire()
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SelectedSoundEffect, Hit.ImpactPoint, 1, 1, 0, SoundAttenuationSettings);
 			}
 			if (SelectedDecal) {
-				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, Hit.GetActor()->GetActorRotation(), SelectedDecalLifeSpan);
+				FRotator ActorRotation = Hit.GetActor()->GetActorRotation();
+				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, FRotator(ActorRotation.Vector().X - 90, ActorRotation.Vector().Y, ActorRotation.Vector().Z), SelectedDecalLifeSpan);
+				UE_LOG(LogTemp, Warning, TEXT("%f"), FRotator(ActorRotation.Vector().X - 90));
 			}
 		}
 
