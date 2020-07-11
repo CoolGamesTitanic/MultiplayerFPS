@@ -4,6 +4,7 @@
 #include "SWeapon.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
@@ -35,7 +36,7 @@ ASWeapon::ASWeapon()
 	MuzzleSocketName = "MozzleFlashSocket";
 	TracerTargetName = "Target";
 
-	
+	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCameraComp"));
 }
 
 // Called when the game starts or when spawned
@@ -43,7 +44,13 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (FirstPersonCamera) {
+		FirstPersonCamera->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SightsName);
+	}
+
 	WeaponSpread = DefaultWeaponSpread;
+
+	SightsName = SightsNameNonPublic;
 }
 
 void ASWeapon::PlayFireEffect(FVector TracerEndPoint)
@@ -153,7 +160,7 @@ void ASWeapon::Fire()
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SelectedSoundEffect, Hit.ImpactPoint, 1, 1, 0, SoundAttenuationSettings);
 			}
 			if (SelectedDecal) {
-				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, Hit.GetActor()->GetActorRotation(), SelectedDecalLifeSpan);
+				UGameplayStatics::SpawnDecalAtLocation(GetWorld(), SelectedDecal, FVector(DecalSize, DecalSize, DecalSize), Hit.ImpactPoint, FRotator(0,0,0), SelectedDecalLifeSpan);
 			}
 		}
 

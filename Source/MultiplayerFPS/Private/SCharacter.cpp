@@ -107,6 +107,9 @@ void ASCharacter::BeginZoom()
 	if (CurrentWeapon) {
 		CurrentWeapon->WeaponSpreadSet1();
 	}
+	if (CameraComp) {
+		CameraComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "FPSSocket");
+	}
 }
 
 void ASCharacter::EndZoom()
@@ -114,6 +117,9 @@ void ASCharacter::EndZoom()
 	bWantsToZoom = false;
 	if (CurrentWeapon) {
 		CurrentWeapon->ResetWeaponSpread();
+	}
+	if (CameraComp) {
+		CameraComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "head");
 	}
 }
 

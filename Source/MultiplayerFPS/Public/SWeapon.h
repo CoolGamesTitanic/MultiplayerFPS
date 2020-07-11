@@ -9,6 +9,7 @@
 class USkeletalMeshComponent;
 class UDamageType;
 class UParticleSystem;
+class UCameraComponent;
 
 UCLASS()
 class MULTIPLAYERFPS_API ASWeapon : public AActor
@@ -24,9 +25,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	void PlayFireEffect(FVector TracerEndPoint);
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		USkeletalMeshComponent* MeshComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		TSubclassOf<UDamageType> DamageType;
@@ -87,6 +85,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	float DecalSize = 10;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+		FName SightsNameNonPublic;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -98,4 +99,13 @@ public:
 		virtual void WeaponSpreadSet1();
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 		virtual void ResetWeaponSpread();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UCameraComponent* FirstPersonCamera;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		USkeletalMeshComponent* MeshComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+		FName SightsName;
 };
